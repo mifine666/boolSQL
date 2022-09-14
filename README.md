@@ -7,4 +7,4 @@ python3 boolSQL.py -r ppack.txt
 ```
 在手工测试确定存在bool注入后，将(1=1)替换为($)，然后将完整数据包放入指定文件内即可。
 
-![image-20220914161602810](/Users/micanpu/Library/Application Support/typora-user-images/image-20220914161602810.png)
+![image-20220914161602810](/Users/micanpu/Library/Application Support/typora-user-images/image-20220914161602810.png) 
