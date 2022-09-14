@@ -311,7 +311,7 @@ def main():
                 printT('Oracle')
                 DATABASE_TYPE = 3
             elif judgeTF(getPdRsp(rtPack,'(select count(*) from sysibm.sysdummy1)>0')) == True:
-                print('DB2')
+                printT('DB2')
                 DATABASE_TYPE = 4
             elif judgeTF(getPdRsp(rtPack,'(select count(*) from msysobjects)>0')) == True:  # 如果没有msysobjects表，就不支持自动检测了
                 printT('Access')
